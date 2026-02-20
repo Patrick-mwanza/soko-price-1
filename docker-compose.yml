@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  server:
+    build: ./server
+    container_name: sokoprice-server
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/sokoprice
+      - JWT_SECRET=${JWT_SECRET:-your-production-secret-change-me}
+      - JWT_EXPIRES_IN=7d
+      - AT_API_KEY=${AT_API_KEY}
+      - AT_USERNAME=${AT_USERNAME:-sandbox}
+      - AT_SENDER_ID=SokoPrice
+      - USSD_SERVICE_CODE=*789#
+      - CLIENT_URL=http://localhost
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@sokoprice.co.ke}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-Admin@123456}
+      - ADMIN_PHONE=${ADMIN_PHONE:-+254700000000}
+    depends_on:
+      - mongo
+    restart: unless-stopped
+    networks:
+      - sokoprice
+
+  client:
+    build: ./client
+    container_name: sokoprice-client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - sokoprice
+
+  mongo:
+    image: mongo:7
+    container_name: sokoprice-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+    networks:
+      - sokoprice
+
+volumes:
+  mongo-data:
+
+
+networks:
+  sokoprice:
+    driver: bridge
