@@ -9,6 +9,18 @@ SokoPrice is a full-stack web platform that provides **real-time agricultural ma
 - **Admins** manage crops, markets, sources, and approve submitted prices
 - **USSD users** dial a shortcode from any phone to get prices via text menus
 
+## 📲 How to Use USSD
+
+Access real-time crop prices from **any phone** — no internet or smartphone required.
+
+1. **Dial `*384*474718#`** on your phone keypad (Safaricom · Airtel · Telkom)
+2. **Select Language** — Choose English or Swahili
+3. **Choose a Crop** — Pick from the available list (e.g. Maize, Beans, Rice)
+4. **Select a Market** — Choose your nearest market
+5. **Get Prices** — Latest prices are displayed instantly via the USSD menu
+
+> 💡 You can also subscribe to **SMS price alerts** to receive daily updates without dialing each time.
+
 ## 🎥 Demo Video
 
 <video src="demo.mp4" controls width="100%"></video>
