@@ -74,7 +74,7 @@ const LoginPage: React.FC = () => {
                                     id="email"
                                     type="email"
                                     className="form-input"
-                                    placeholder="admin@sokoprice.co.ke"
+                                    placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     required
