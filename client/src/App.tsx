@@ -7,6 +7,7 @@ import PriceManagementPage from './pages/PriceManagementPage';
 import SourceManagementPage from './pages/SourceManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import BuyerDashboardPage from './pages/BuyerDashboardPage';
+import FarmerDashboardPage from './pages/FarmerDashboardPage';
 
 // Protected route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
@@ -117,6 +118,10 @@ const AppRoutes: React.FC = () => {
 
     return (
         <Routes>
+            {/* Public Farmer Dashboard — no auth required */}
+            <Route path="/farmers-dashboard" element={<FarmerDashboardPage />} />
+            <Route path="/dashboard/public" element={<FarmerDashboardPage />} />
+
             <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <LoginPage />} />
 
             {/* Admin Routes */}
@@ -135,9 +140,9 @@ const AppRoutes: React.FC = () => {
             <Route path="/buyer" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><BuyerDashboardPage /></AppLayout></ProtectedRoute>} />
             <Route path="/buyer/reports" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
 
-            {/* Default redirect */}
-            <Route path="/" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <Navigate to="/login" />} />
-            <Route path="*" element={<Navigate to="/login" />} />
+            {/* Default: unauthenticated users see farmer dashboard */}
+            <Route path="/" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <Navigate to="/farmers-dashboard" />} />
+            <Route path="*" element={<Navigate to="/farmers-dashboard" />} />
         </Routes>
     );
 };
