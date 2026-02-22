@@ -11,9 +11,7 @@ SokoPrice is a full-stack web platform that provides **real-time agricultural ma
 
 ## 🎥 Demo Video
 
-https://github.com/user-attachments/assets/demo.mp4
-
-> **Note:** To view the demo locally, see [`demo.mp4`](./demo.mp4) in the project root.
+<video src="demo.mp4" controls width="100%"></video>
 
 ## 📱 Key Features
 
