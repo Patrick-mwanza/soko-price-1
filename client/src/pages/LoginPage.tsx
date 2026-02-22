@@ -8,10 +8,11 @@ const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const [role, setRole] = useState<'Farmer' | 'Buyer'>('Farmer');
+    const [role] = useState<'Buyer'>('Buyer');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -84,15 +85,22 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="password">Password</label>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    className="form-input"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                />
+                                <div style={{ position: 'relative' }}>
+                                    <input
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        className="form-input"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        style={{ paddingRight: '40px' }}
+                                    />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                                        style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: 'var(--text-muted)' }}>
+                                        {showPassword ? '🙈' : '👁️'}
+                                    </button>
+                                </div>
                             </div>
 
                             <button
@@ -153,30 +161,36 @@ const LoginPage: React.FC = () => {
                             </div>
 
                             <div className="form-group">
-                                <label htmlFor="reg-role">I am a</label>
-                                <select
+                                <label htmlFor="reg-role">Account Type</label>
+                                <input
                                     id="reg-role"
+                                    type="text"
                                     className="form-input"
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value as 'Farmer' | 'Buyer')}
-                                >
-                                    <option value="Farmer">🌱 Farmer</option>
-                                    <option value="Buyer">🛒 Buyer / NGO</option>
-                                </select>
+                                    value="🛒 Buyer / NGO"
+                                    disabled
+                                    style={{ opacity: 0.7 }}
+                                />
                             </div>
 
                             <div className="form-group">
                                 <label htmlFor="reg-password">Password</label>
-                                <input
-                                    id="reg-password"
-                                    type="password"
-                                    className="form-input"
-                                    placeholder="Min 6 characters"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    minLength={6}
-                                />
+                                <div style={{ position: 'relative' }}>
+                                    <input
+                                        id="reg-password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        className="form-input"
+                                        placeholder="Min 6 characters"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        minLength={6}
+                                        style={{ paddingRight: '40px' }}
+                                    />
+                                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                                        style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', fontSize: '16px', color: 'var(--text-muted)' }}>
+                                        {showPassword ? '🙈' : '👁️'}
+                                    </button>
+                                </div>
                             </div>
 
                             <button
