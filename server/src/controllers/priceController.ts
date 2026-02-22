@@ -153,17 +153,17 @@ export const createPrice = async (req: Request, res: Response): Promise<void> =>
         // If no cropId/marketId provided, use first available
         if (!resolvedCropId) {
             const firstCrop = await Crop.findOne();
-            if (firstCrop) resolvedCropId = firstCrop._id;
+            if (firstCrop) resolvedCropId = (firstCrop._id as any).toString();
             else { res.status(400).json({ message: 'No crops available' }); return; }
         }
         if (!resolvedMarketId) {
             const firstMarket = await Market.findOne();
-            if (firstMarket) resolvedMarketId = firstMarket._id;
+            if (firstMarket) resolvedMarketId = (firstMarket._id as any).toString();
             else { res.status(400).json({ message: 'No markets available' }); return; }
         }
         if (!resolvedSourceId) {
             const firstSource = await Source.findOne();
-            if (firstSource) resolvedSourceId = firstSource._id;
+            if (firstSource) resolvedSourceId = (firstSource._id as any).toString();
             else { res.status(400).json({ message: 'No sources available' }); return; }
         }
 
