@@ -30,11 +30,11 @@ const PriceManagementPage: React.FC = () => {
 
     // Inline "Add New" states
     const [addingCrop, setAddingCrop] = useState(false);
-    const [newCrop, setNewCrop] = useState({ name: '', unit: 'kg', season: 'Year-round' });
+    const [newCrop, setNewCrop] = useState({ name: '', nameSwahili: '', unit: 'kg', category: 'cereals' });
     const [addingMarket, setAddingMarket] = useState(false);
-    const [newMarket, setNewMarket] = useState({ name: '', county: '', location: '' });
+    const [newMarket, setNewMarket] = useState({ name: '', county: '', region: '' });
     const [addingSource, setAddingSource] = useState(false);
-    const [newSource, setNewSource] = useState({ name: '', phone: '', role: 'Market Agent' });
+    const [newSource, setNewSource] = useState({ name: '', phoneNumber: '', role: 'Trader' });
 
     // Load crops, markets, sources for form dropdowns
     const loadFormData = async () => {
@@ -83,7 +83,7 @@ const PriceManagementPage: React.FC = () => {
             setCrops(prev => [...prev, res.data]);
             setFormData(prev => ({ ...prev, cropId: res.data._id }));
             setAddingCrop(false);
-            setNewCrop({ name: '', unit: 'kg', season: 'Year-round' });
+            setNewCrop({ name: '', nameSwahili: '', unit: 'kg', category: 'cereals' });
             setFormMsg('✅ New crop created!');
             setTimeout(() => setFormMsg(''), 2000);
         } catch (err: any) {
@@ -93,13 +93,13 @@ const PriceManagementPage: React.FC = () => {
 
     // Create new market inline
     const handleCreateMarket = async () => {
-        if (!newMarket.name || !newMarket.county) return;
+        if (!newMarket.name || !newMarket.county || !newMarket.region) return;
         try {
             const res = await api.post('/markets', newMarket);
             setMarkets(prev => [...prev, res.data]);
             setFormData(prev => ({ ...prev, marketId: res.data._id }));
             setAddingMarket(false);
-            setNewMarket({ name: '', county: '', location: '' });
+            setNewMarket({ name: '', county: '', region: '' });
             setFormMsg('✅ New market created!');
             setTimeout(() => setFormMsg(''), 2000);
         } catch (err: any) {
@@ -109,13 +109,13 @@ const PriceManagementPage: React.FC = () => {
 
     // Create new source inline
     const handleCreateSource = async () => {
-        if (!newSource.name || !newSource.phone) return;
+        if (!newSource.name || !newSource.phoneNumber) return;
         try {
             const res = await api.post('/sources', newSource);
             setSources(prev => [...prev, res.data]);
             setFormData(prev => ({ ...prev, sourceId: res.data._id }));
             setAddingSource(false);
-            setNewSource({ name: '', phone: '', role: 'Market Agent' });
+            setNewSource({ name: '', phoneNumber: '', role: 'Trader' });
             setFormMsg('✅ New source created!');
             setTimeout(() => setFormMsg(''), 2000);
         } catch (err: any) {
@@ -224,12 +224,20 @@ const PriceManagementPage: React.FC = () => {
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(34,197,94,0.05)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(34,197,94,0.3)' }}>
                                         <input className="form-input" placeholder="Crop name (e.g. Tomatoes)" value={newCrop.name}
                                             onChange={(e) => setNewCrop({ ...newCrop, name: e.target.value })} />
+                                        <input className="form-input" placeholder="Swahili name (e.g. Nyanya)" value={newCrop.nameSwahili}
+                                            onChange={(e) => setNewCrop({ ...newCrop, nameSwahili: e.target.value })} />
                                         <div style={{ display: 'flex', gap: '6px' }}>
                                             <select className="form-input" value={newCrop.unit}
                                                 onChange={(e) => setNewCrop({ ...newCrop, unit: e.target.value })}>
-                                                <option value="kg">kg</option><option value="bag">bag (90kg)</option>
+                                                <option value="kg">kg</option><option value="90kg bag">bag (90kg)</option>
                                                 <option value="debe">debe</option><option value="bunch">bunch</option>
                                                 <option value="crate">crate</option><option value="piece">piece</option>
+                                            </select>
+                                            <select className="form-input" value={newCrop.category}
+                                                onChange={(e) => setNewCrop({ ...newCrop, category: e.target.value })}>
+                                                <option value="cereals">Cereals</option><option value="legumes">Legumes</option>
+                                                <option value="tubers">Tubers</option><option value="vegetables">Vegetables</option>
+                                                <option value="fruits">Fruits</option><option value="other">Other</option>
                                             </select>
                                             <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateCrop}>Create</button>
                                         </div>
@@ -259,6 +267,8 @@ const PriceManagementPage: React.FC = () => {
                                         <div style={{ display: 'flex', gap: '6px' }}>
                                             <input className="form-input" placeholder="County (e.g. Nairobi)" value={newMarket.county}
                                                 onChange={(e) => setNewMarket({ ...newMarket, county: e.target.value })} />
+                                            <input className="form-input" placeholder="Region (e.g. Central)" value={newMarket.region}
+                                                onChange={(e) => setNewMarket({ ...newMarket, region: e.target.value })} />
                                             <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateMarket}>Create</button>
                                         </div>
                                     </div>
@@ -285,8 +295,14 @@ const PriceManagementPage: React.FC = () => {
                                         <input className="form-input" placeholder="Source name (e.g. John Kamau)" value={newSource.name}
                                             onChange={(e) => setNewSource({ ...newSource, name: e.target.value })} />
                                         <div style={{ display: 'flex', gap: '6px' }}>
-                                            <input className="form-input" placeholder="Phone (+254...)" value={newSource.phone}
-                                                onChange={(e) => setNewSource({ ...newSource, phone: e.target.value })} />
+                                            <input className="form-input" placeholder="Phone (+254...)" value={newSource.phoneNumber}
+                                                onChange={(e) => setNewSource({ ...newSource, phoneNumber: e.target.value })} />
+                                            <select className="form-input" value={newSource.role}
+                                                onChange={(e) => setNewSource({ ...newSource, role: e.target.value })}>
+                                                <option value="Trader">Trader</option>
+                                                <option value="Official">Official</option>
+                                                <option value="Enumerator">Enumerator</option>
+                                            </select>
                                             <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateSource}>Create</button>
                                         </div>
                                     </div>
