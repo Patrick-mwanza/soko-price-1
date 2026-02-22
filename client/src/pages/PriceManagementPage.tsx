@@ -19,6 +19,34 @@ const PriceManagementPage: React.FC = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
+    // Add Price form state
+    const [showForm, setShowForm] = useState(false);
+    const [crops, setCrops] = useState<any[]>([]);
+    const [markets, setMarkets] = useState<any[]>([]);
+    const [sources, setSources] = useState<any[]>([]);
+    const [formData, setFormData] = useState({ cropId: '', marketId: '', sourceId: '', price: '' });
+    const [submitting, setSubmitting] = useState(false);
+    const [formMsg, setFormMsg] = useState('');
+
+    // Load crops, markets, sources for form dropdowns
+    useEffect(() => {
+        const loadFormData = async () => {
+            try {
+                const [cropsRes, marketsRes, sourcesRes] = await Promise.all([
+                    api.get('/crops'),
+                    api.get('/markets'),
+                    api.get('/sources').catch(() => ({ data: [] })),
+                ]);
+                setCrops(cropsRes.data);
+                setMarkets(marketsRes.data);
+                setSources(sourcesRes.data);
+            } catch (err) {
+                console.error('Failed to load form data:', err);
+            }
+        };
+        loadFormData();
+    }, []);
+
     const fetchPrices = async () => {
         setLoading(true);
         try {
@@ -39,6 +67,32 @@ const PriceManagementPage: React.FC = () => {
     useEffect(() => {
         fetchPrices();
     }, [filter, page]);
+
+    const handleAddPrice = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!formData.cropId || !formData.marketId || !formData.price) {
+            setFormMsg('Please fill in all required fields');
+            return;
+        }
+        setSubmitting(true);
+        setFormMsg('');
+        try {
+            await api.post('/prices', {
+                cropId: formData.cropId,
+                marketId: formData.marketId,
+                sourceId: formData.sourceId || undefined,
+                price: Number(formData.price),
+            });
+            setFormMsg('✅ Price added successfully!');
+            setFormData({ cropId: '', marketId: '', sourceId: '', price: '' });
+            fetchPrices();
+            setTimeout(() => setFormMsg(''), 3000);
+        } catch (err: any) {
+            setFormMsg(`❌ ${err.response?.data?.message || 'Failed to add price'}`);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const handleApprove = async (id: string) => {
         try {
@@ -76,10 +130,95 @@ const PriceManagementPage: React.FC = () => {
 
     return (
         <section className="animate-in">
-            <header className="page-header">
-                <h1>💰 Price Management</h1>
-                <p>Review, approve, and manage submitted market prices</p>
+            <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                    <h1>💰 Price Management</h1>
+                    <p>Review, approve, and manage submitted market prices</p>
+                </div>
+                <button
+                    className={`btn ${showForm ? 'btn-outline' : 'btn-primary'}`}
+                    onClick={() => setShowForm(!showForm)}
+                    id="toggle-add-price"
+                >
+                    {showForm ? '✕ Close' : '➕ Add Price'}
+                </button>
             </header>
+
+            {/* Add Price Form */}
+            {showForm && (
+                <article className="card" style={{ marginBottom: '24px', border: '1px solid rgba(34,197,94,0.2)' }}>
+                    <h3 style={{ marginBottom: '16px' }}>📝 Add New Price</h3>
+                    <form onSubmit={handleAddPrice} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', alignItems: 'end' }}>
+                        <div>
+                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
+                                Crop *
+                            </label>
+                            <select
+                                className="form-input"
+                                value={formData.cropId}
+                                onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
+                                required
+                            >
+                                <option value="">Select crop</option>
+                                {crops.map(c => <option key={c._id} value={c._id}>{c.name} ({c.unit})</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
+                                Market *
+                            </label>
+                            <select
+                                className="form-input"
+                                value={formData.marketId}
+                                onChange={(e) => setFormData({ ...formData, marketId: e.target.value })}
+                                required
+                            >
+                                <option value="">Select market</option>
+                                {markets.map(m => <option key={m._id} value={m._id}>{m.name} ({m.county})</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
+                                Source (optional)
+                            </label>
+                            <select
+                                className="form-input"
+                                value={formData.sourceId}
+                                onChange={(e) => setFormData({ ...formData, sourceId: e.target.value })}
+                            >
+                                <option value="">Auto-select</option>
+                                {sources.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                            </select>
+                        </div>
+                        <div>
+                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
+                                Price (KSh) *
+                            </label>
+                            <input
+                                type="number"
+                                className="form-input"
+                                placeholder="e.g. 4500"
+                                value={formData.price}
+                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                min="1"
+                                required
+                            />
+                        </div>
+                        <button type="submit" className="btn btn-primary" disabled={submitting} style={{ height: '42px' }}>
+                            {submitting ? '⏳ Adding...' : '✅ Submit Price'}
+                        </button>
+                    </form>
+                    {formMsg && (
+                        <p style={{
+                            marginTop: '12px', padding: '8px 12px', borderRadius: '8px', fontSize: '13px',
+                            background: formMsg.startsWith('✅') ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)',
+                            color: formMsg.startsWith('✅') ? 'var(--green-400)' : '#ef4444',
+                        }}>
+                            {formMsg}
+                        </p>
+                    )}
+                </article>
+            )}
 
             <nav className="filter-bar" aria-label="Price filters">
                 <button
