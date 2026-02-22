@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "post api auth register user registration",
+    "description": "Test user registration with valid name, email, and password to receive 201 status with JWT token and user details including role and language."
+  },
+  {
+    "id": "TC002",
+    "title": "post api auth login user authentication",
+    "description": "Test user login with valid email and password to receive 200 status with JWT token and user information."
+  },
+  {
+    "id": "TC003",
+    "title": "get api auth me authenticated user profile retrieval",
+    "description": "Test retrieval of authenticated user profile with valid JWT token to receive 200 status with user details including phoneNumber and role."
+  },
+  {
+    "id": "TC004",
+    "title": "post api ussd process incoming ussd session",
+    "description": "Test processing of USSD session with valid sessionId, serviceCode, phoneNumber, and text input to receive 200 status with CON or END text response for menu navigation."
+  },
+  {
+    "id": "TC005",
+    "title": "get api prices list crop market prices",
+    "description": "Test listing of crop market prices with optional filters cropId, marketId, and approved to receive 200 status with paginated price data."
+  },
+  {
+    "id": "TC006",
+    "title": "post api prices submit new price report",
+    "description": "Test submission of new crop price report with valid cropId, marketId, price, sourceId, and notes to receive 201 status with created Price object in pending status."
+  },
+  {
+    "id": "TC007",
+    "title": "patch api prices id approve admin price approval",
+    "description": "Test admin approval of pending price by PATCHing /api/prices/:id/approve with valid admin JWT token to receive 200 status with updated Price object marked as approved."
+  },
+  {
+    "id": "TC008",
+    "title": "patch api prices id reject admin price rejection",
+    "description": "Test admin rejection of pending price by PATCHing /api/prices/:id/reject with valid admin JWT token to receive 200 status with confirmation message of price rejection and removal."
+  },
+  {
+    "id": "TC009",
+    "title": "get api analytics overview authenticated dashboard statistics",
+    "description": "Test retrieval of dashboard overview statistics with valid admin JWT token to receive 200 status with totalUsers, activeMarkets, pricesToday, pendingApprovals, totalCrops, and totalSources."
+  },
+  {
+    "id": "TC010",
+    "title": "get api crops list available crops",
+    "description": "Test listing of all available crops via GET /api/crops to receive 200 status with array of Crop objects."
+  }
+]

@@ -1,0 +1,218 @@
+version: "2"
+type: backend
+tech_stack:
+  - TypeScript
+  - Express.js
+  - Node.js
+  - MongoDB
+  - Mongoose
+  - JWT (jsonwebtoken)
+  - bcryptjs
+features:
+  - name: Authentication API
+    description: User registration, login, and profile retrieval with JWT authentication
+    files:
+      - src/controllers/authController.ts
+      - src/routes/authRoutes.ts
+      - src/middleware/auth.ts
+      - src/models/User.ts
+    endpoints:
+      - method: POST
+        path: /api/auth/register
+        description: Register a new user account
+        auth_required: false
+        request_schema:
+          body:
+            name: string
+            email: string
+            password: string
+        response_schema:
+          "201": "{ token, user: { id, name, email, role, language } }"
+          "400": "Validation error or email exists"
+      - method: POST
+        path: /api/auth/login
+        description: Login with email and password to get JWT token
+        auth_required: false
+        request_schema:
+          body:
+            email: string
+            password: string
+        response_schema:
+          "200": "{ token, user: { id, name, email, role, language } }"
+          "400": "Missing email or password"
+          "401": "Invalid credentials"
+      - method: GET
+        path: /api/auth/me
+        description: Get current authenticated user profile
+        auth_required: true
+        response_schema:
+          "200": "{ user: { id, name, email, role, language, phoneNumber } }"
+    depends_on: []
+
+  - name: USSD Gateway API
+    description: Handle incoming USSD sessions for farmers to check and submit crop prices
+    files:
+      - src/controllers/ussdController.ts
+      - src/routes/ussdRoutes.ts
+    endpoints:
+      - method: POST
+        path: /api/ussd
+        description: Process a USSD menu session (check prices, submit prices, change language)
+        auth_required: false
+        request_schema:
+          body:
+            sessionId: string
+            serviceCode: string
+            phoneNumber: string
+            text: string
+        response_schema:
+          "200": "text/plain response starting with CON or END"
+    depends_on:
+      - Crop Management API
+      - Market Management API
+
+  - name: Prices API
+    description: CRUD operations for crop market prices with confidence scoring
+    files:
+      - src/controllers/priceController.ts
+      - src/routes/priceRoutes.ts
+      - src/models/Price.ts
+      - src/services/confidenceService.ts
+    endpoints:
+      - method: GET
+        path: /api/prices
+        description: List prices with optional filters (cropId, marketId, approved)
+        auth_required: false
+        response_schema:
+          "200": "{ prices: Price[], total, page, pages }"
+      - method: GET
+        path: /api/prices/market
+        description: Public alias for listing all market prices
+        auth_required: false
+        response_schema:
+          "200": "{ prices: Price[], total, page, pages }"
+      - method: POST
+        path: /api/prices
+        description: Submit a new price report
+        auth_required: false
+        request_schema:
+          body:
+            cropId: string
+            marketId: string
+            price: number
+            sourceId: string
+            notes: string
+        response_schema:
+          "201": Price
+      - method: PATCH
+        path: /api/prices/:id/approve
+        description: Approve a pending price (Admin only)
+        auth_required: true
+        response_schema:
+          "200": Price
+      - method: PATCH
+        path: /api/prices/:id/reject
+        description: Reject and remove a pending price (Admin only)
+        auth_required: true
+        response_schema:
+          "200": "{ message: 'Price rejected and removed' }"
+    depends_on:
+      - Authentication API
+
+  - name: Analytics API
+    description: Dashboard statistics, price trends, and market comparisons
+    files:
+      - src/controllers/analyticsController.ts
+      - src/routes/analyticsRoutes.ts
+    endpoints:
+      - method: GET
+        path: /api/analytics/overview
+        description: Get overview statistics (total users, active markets, prices today, etc.)
+        auth_required: true
+        response_schema:
+          "200": "{ totalUsers, activeMarkets, pricesToday, pendingApprovals, totalCrops, totalSources }"
+      - method: GET
+        path: /api/analytics/dashboard
+        description: Public alias for overview statistics
+        auth_required: false
+        response_schema:
+          "200": "{ totalUsers, activeMarkets, pricesToday, pendingApprovals, totalCrops, totalSources }"
+      - method: GET
+        path: /api/analytics/trends
+        description: Get price trends over time with optional filters
+        auth_required: true
+        request_schema:
+          query:
+            days: number
+            cropId: string
+            marketId: string
+        response_schema:
+          "200": "Array of { date, crop, market, avgPrice, minPrice, maxPrice, submissions }"
+      - method: GET
+        path: /api/analytics/compare
+        description: Compare prices across markets for a specific crop
+        auth_required: true
+        request_schema:
+          query:
+            cropId: string (required)
+        response_schema:
+          "200": "Array of { market, county, price, date, confidence }"
+    depends_on:
+      - Authentication API
+
+  - name: Crop Management API
+    description: CRUD for crop types
+    files:
+      - src/controllers/cropController.ts
+      - src/routes/cropRoutes.ts
+      - src/models/Crop.ts
+    endpoints:
+      - method: GET
+        path: /api/crops
+        description: List all crops
+        auth_required: false
+        response_schema:
+          "200": Crop[]
+    depends_on: []
+
+  - name: Market Management API
+    description: CRUD for market locations
+    files:
+      - src/controllers/marketController.ts
+      - src/routes/marketRoutes.ts
+      - src/models/Market.ts
+    endpoints:
+      - method: GET
+        path: /api/markets
+        description: List all markets
+        auth_required: false
+        response_schema:
+          "200": Market[]
+    depends_on: []
+
+  - name: Health Check
+    description: Simple health check endpoint
+    files:
+      - src/index.ts
+    endpoints:
+      - method: GET
+        path: /api/health
+        description: Returns server health status
+        auth_required: false
+        response_schema:
+          "200": "{ status: 'ok', service, version, timestamp }"
+    depends_on: []
+
+known_limitations:
+  - issue: SMS service falls back to simulated mode without Africa's Talking credentials
+    location: src/services/smsService.ts
+    impact: SMS messages are logged to console instead of sent
+  - issue: Admin credentials must be seeded before login tests work
+    location: src/seed.ts
+    impact: Tests requiring auth will fail if npm run seed has not been run
+  - issue: Test admin user credentials for login
+    location: .env
+    impact: "Use these credentials for all authenticated test endpoints: email=admin@sokoprice.co.ke password=Admin@123456"
+  - issue: Test buyer user credentials for login
+    location: .env
+    impact: "Alternative user for testing: email=buyer@sokoprice.co.ke password=Buyer@123456"

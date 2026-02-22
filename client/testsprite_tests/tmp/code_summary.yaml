@@ -1,0 +1,159 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - React
+  - Vite
+  - React Router DOM
+  - Recharts
+  - CSS
+routes:
+  - path: /
+    file: src/App.tsx
+    auth_required: false
+    description: Public landing page with hero section and feature highlights
+  - path: /login
+    file: src/pages/LoginPage.tsx
+    auth_required: false
+    description: Login page with email and password form
+  - path: /dashboard
+    file: src/pages/DashboardPage.tsx
+    auth_required: true
+    description: Admin dashboard with overview statistics
+  - path: /prices
+    file: src/pages/PriceManagementPage.tsx
+    auth_required: true
+    description: Price management table with approve/reject actions
+  - path: /sources
+    file: src/pages/SourceManagementPage.tsx
+    auth_required: true
+    description: Data source management page
+  - path: /analytics
+    file: src/pages/AnalyticsPage.tsx
+    auth_required: true
+    description: Analytics page with price trend charts
+  - path: /buyer
+    file: src/pages/BuyerDashboardPage.tsx
+    auth_required: true
+    description: Buyer dashboard with live prices and trends
+features:
+  - name: Landing Page
+    description: Public facing landing page with hero section, feature cards, and navigation links
+    files:
+      - src/App.tsx
+    entry_route: /
+    user_interactions:
+      - View the hero section with SokoPrice branding
+      - See feature highlight cards
+      - Click Login button to navigate to /login
+      - Click Get Started button
+    api_calls: []
+    auth_required: false
+  - name: User Login
+    description: Login form for admin and buyer users with email/password authentication
+    files:
+      - src/pages/LoginPage.tsx
+      - src/context/AuthContext.tsx
+      - src/services/api.ts
+    entry_route: /login
+    user_interactions:
+      - Fill email input field with admin@sokoprice.co.ke
+      - Fill password input field with Admin@123456
+      - Click Login button to submit
+      - See error message on invalid credentials
+      - Redirected to /dashboard on successful login
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/login
+    auth_required: false
+  - name: Admin Dashboard
+    description: Overview dashboard showing stats cards for total users, active markets, prices today, and pending approvals
+    files:
+      - src/pages/DashboardPage.tsx
+      - src/services/api.ts
+    entry_route: /dashboard
+    user_interactions:
+      - View stat cards showing totalUsers, activeMarkets, pricesToday, pendingApprovals
+      - View recent price submissions table
+      - Click navigation links to other admin pages
+    api_calls:
+      - method: GET
+        endpoint: /api/analytics/overview
+      - method: GET
+        endpoint: /api/prices?limit=5
+    auth_required: true
+  - name: Price Management
+    description: Admin page for viewing submitted prices, approving or rejecting them
+    files:
+      - src/pages/PriceManagementPage.tsx
+      - src/services/api.ts
+    entry_route: /prices
+    user_interactions:
+      - View table of submitted prices with crop, market, price, source, and date
+      - Click Approve button to approve a pending price
+      - Click Reject button to reject and remove a price
+      - Filter prices by approval status
+    api_calls:
+      - method: GET
+        endpoint: /api/prices
+      - method: PATCH
+        endpoint: /api/prices/:id/approve
+      - method: PATCH
+        endpoint: /api/prices/:id/reject
+    auth_required: true
+  - name: Source Management
+    description: Admin page for viewing and managing data sources (farmers, traders, officials)
+    files:
+      - src/pages/SourceManagementPage.tsx
+      - src/services/api.ts
+    entry_route: /sources
+    user_interactions:
+      - View table of data sources with name, role, phone number, and reliability score
+      - See reliability score indicators
+    api_calls:
+      - method: GET
+        endpoint: /api/sources
+    auth_required: true
+  - name: Analytics
+    description: Analytics page with interactive Recharts line charts for price trends and bar charts for market comparisons
+    files:
+      - src/pages/AnalyticsPage.tsx
+      - src/services/api.ts
+    entry_route: /analytics
+    user_interactions:
+      - View price trend line charts over time
+      - View market comparison bar charts
+      - Filter by crop and time period
+    api_calls:
+      - method: GET
+        endpoint: /api/analytics/trends
+      - method: GET
+        endpoint: /api/analytics/compare
+    auth_required: true
+  - name: Buyer Dashboard
+    description: Buyer/NGO dashboard with live market prices, historical trends, supply indicators, and CSV export
+    files:
+      - src/pages/BuyerDashboardPage.tsx
+      - src/services/api.ts
+    entry_route: /buyer
+    user_interactions:
+      - View live market prices table
+      - View historical price trend charts
+      - Filter by crop and market
+      - Click Export Report button to download CSV
+      - View supply level indicators
+    api_calls:
+      - method: GET
+        endpoint: /api/prices
+      - method: GET
+        endpoint: /api/crops
+      - method: GET
+        endpoint: /api/markets
+    auth_required: true
+known_limitations:
+  - issue: Frontend requires backend API running on port 5000
+    location: src/services/api.ts
+    impact: All API calls will fail if the backend Express server is not running
+  - issue: Login required for most pages - use admin@sokoprice.co.ke / Admin@123456
+    location: src/context/AuthContext.tsx
+    impact: Unauthenticated users are redirected to /login

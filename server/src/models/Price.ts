@@ -54,8 +54,13 @@ const PriceSchema = new Schema<IPrice>(
             trim: true,
         },
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// Virtual status field: 'pending' or 'approved'
+PriceSchema.virtual('status').get(function (this: IPrice) {
+    return this.approved ? 'approved' : 'pending';
+});
 
 PriceSchema.index({ cropId: 1, marketId: 1, date: -1 });
 PriceSchema.index({ approved: 1 });

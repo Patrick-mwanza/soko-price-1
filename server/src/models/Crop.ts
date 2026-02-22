@@ -33,8 +33,13 @@ const CropSchema = new Schema<ICrop>(
             default: 'cereals',
         },
     },
-    { timestamps: true }
+    { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// Virtual 'code' field derived from crop name
+CropSchema.virtual('code').get(function () {
+    return this.name?.toLowerCase().replace(/\s+/g, '_');
+});
 
 CropSchema.index({ name: 1 });
 

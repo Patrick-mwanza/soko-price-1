@@ -209,6 +209,6 @@ Approved price = weighted average by source reliability.
 └── .env.example
 ```
 
-## 📄 Licensenpm run seed 
+## 📄 License
 
 MIT © SokoPrice

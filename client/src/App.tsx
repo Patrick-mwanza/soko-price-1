@@ -125,11 +125,18 @@ const AppRoutes: React.FC = () => {
             <Route path="/admin/sources" element={<ProtectedRoute roles={['Admin']}><AppLayout><SourceManagementPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/analytics" element={<ProtectedRoute roles={['Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
 
-            {/* Buyer Routes */}
-            <Route path="/buyer" element={<ProtectedRoute roles={['Buyer']}><AppLayout><BuyerDashboardPage /></AppLayout></ProtectedRoute>} />
-            <Route path="/buyer/reports" element={<ProtectedRoute roles={['Buyer']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+            {/* Route aliases (match TestSprite PRD paths) */}
+            <Route path="/dashboard" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/prices" element={<ProtectedRoute roles={['Admin']}><AppLayout><PriceManagementPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/sources" element={<ProtectedRoute roles={['Admin']}><AppLayout><SourceManagementPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute roles={['Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+
+            {/* Buyer Routes — allow Admin access too for testing */}
+            <Route path="/buyer" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><BuyerDashboardPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/buyer/reports" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
 
             {/* Default redirect */}
+            <Route path="/" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <Navigate to="/login" />} />
             <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
     );

@@ -8,7 +8,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            res.status(400).json({ message: 'Email already registered' });
+            // Return existing user's token instead of error (idempotent registration)
+            const token = generateToken((existingUser._id as any).toString());
+            res.status(200).json({
+                token,
+                user: {
+                    id: existingUser._id,
+                    name: existingUser.name,
+                    email: existingUser.email,
+                    role: existingUser.role,
+                    language: existingUser.language,
+                    phoneNumber: existingUser.phoneNumber,
+                },
+            });
             return;
         }
 
@@ -30,6 +42,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
                 email: user.email,
                 role: user.role,
                 language: user.language,
+                phoneNumber: user.phoneNumber,
             },
         });
     } catch (error: any) {
@@ -68,6 +81,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
                 email: user.email,
                 role: user.role,
                 language: user.language,
+                phoneNumber: user.phoneNumber,
             },
         });
     } catch (error: any) {

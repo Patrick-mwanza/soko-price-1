@@ -12,6 +12,7 @@ import { protect, authorize } from '../middleware/auth';
 const router = Router();
 
 router.get('/', getPrices);
+router.get('/market', getPrices); // Public alias for price listing (TestSprite compatibility)
 router.get('/latest/:cropId/:marketId', getLatestPrice);
 router.get('/history/:cropId/:marketId', getPriceHistory);
 router.post('/', createPrice);

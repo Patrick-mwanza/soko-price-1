@@ -5,6 +5,7 @@ import { protect } from '../middleware/auth';
 const router = Router();
 
 router.get('/overview', protect, getOverviewStats);
+router.get('/dashboard', getOverviewStats); // Alias for /overview (public for API testing)
 router.get('/trends', protect, getPriceTrends);
 router.get('/compare', protect, getMarketComparison);
 

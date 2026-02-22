@@ -1,0 +1,6 @@
+≡ƒÜÇ Starting test execution...
+readConfig error: Error: ENOENT: no such file or directory, open 'C:\Users\ADMIN\Desktop\Soko Yetu\testsprite_tests\tmp\config.json'
+Γ¥î Test execution failed: Error: Execution arguments are not found in config. Please run `testsprite_generate_code_and_execute` first.
+    at Command.<anonymous> (file:///C:/Users/ADMIN/AppData/Local/npm-cache/_npx/d9346830dbd0a8a4/node_modules/@testsprite/testsprite-mcp/dist/index.js:140998:19)
+    at async Command.parseAsync (file:///C:/Users/ADMIN/AppData/Local/npm-cache/_npx/d9346830dbd0a8a4/node_modules/@testsprite/testsprite-mcp/dist/index.js:139274:6)
+    at async main (file:///C:/Users/ADMIN/AppData/Local/npm-cache/_npx/d9346830dbd0a8a4/node_modules/@testsprite/testsprite-mcp/dist/index.js:141230:9)

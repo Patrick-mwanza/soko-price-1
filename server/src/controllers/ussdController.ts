@@ -17,6 +17,14 @@ const marketIndexes = ['Wakulima', 'Eldoret', 'Kisumu', 'Nakuru', 'Mombasa'];
 export const handleUSSD = async (req: Request, res: Response): Promise<void> => {
     try {
         const { sessionId, serviceCode, phoneNumber, text } = req.body;
+
+        // Validate required fields
+        if (!sessionId && !phoneNumber) {
+            res.set('Content-Type', 'text/plain');
+            res.send('END Invalid request. Missing required USSD parameters.');
+            return;
+        }
+
         const phone = sanitizePhone(phoneNumber || '');
         const lang = userLanguages.get(phone) || 'en';
         const parts = (text || '').split('*').filter((p: string) => p !== '');
@@ -74,10 +82,13 @@ export const handleUSSD = async (req: Request, res: Response): Promise<void> => 
                                 `${t('confidence', lang)}: ${confidenceLabel}` +
                                 `${t('getSMS', lang)}`;
                         } else {
-                            response = `END ${t('noPriceData', lang)}`;
+                            const displayName = lang === 'sw' ? crop.nameSwahili : crop.name;
+                            response = `END ${displayName} — ${market.name} Market\nPrice: Not yet available\nNo approved price data has been submitted for this crop and market combination. Please try again later.`;
                         }
                     } else {
-                        response = `END ${t('noPriceData', lang)}`;
+                        const cn = cropIndexes[cropIdx] || 'Unknown';
+                        const mn = marketIndexes[marketIdx] || 'Unknown';
+                        response = `END ${cn} — ${mn} Market\nPrice: Not yet available\nNo matching crop or market found in the system.`;
                     }
                 } else {
                     response = `CON ${t('invalidInput', lang)}`;

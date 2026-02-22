@@ -1,0 +1,16 @@
+{
+  "status": "commited",
+  "type": "frontend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:5173/",
+  "executionArgs": {
+    "projectName": "Soko Yetu Client",
+    "projectPath": "c:/Users/ADMIN/Desktop/Soko Yetu/client",
+    "testIds": [],
+    "additionalInstruction": "",
+    "envs": {
+      "API_KEY": "sk-user-lJyuwzBakHGAaLQ3ST4c4tFjPYjZLSabyVZiEvOakkDFjN32AzJzOn1RZJpYyRibCRSDPWP1yRPvscPGqajnBbvrdWW-gipYm8dIfXjND6Vg4i7jEI1TGr9LBJ4VfxA0-TU"
+    }
+  },
+  "serverPort": 38180
+}
