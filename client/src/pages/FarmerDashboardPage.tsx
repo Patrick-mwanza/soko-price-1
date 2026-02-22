@@ -168,7 +168,7 @@ const FarmerDashboardPage: React.FC = () => {
                             fontSize: '12px',
                             fontWeight: 600,
                         }}>
-                            USSD: *384*70#
+                            USSD: *384*474718#
                         </span>
                         <a href="/login" style={{
                             color: 'var(--text-muted)',
@@ -489,7 +489,7 @@ const FarmerDashboardPage: React.FC = () => {
                         marginBottom: '16px',
                     }}>
                         <p style={{ fontSize: '28px', fontWeight: 800, color: 'var(--green-400)', letterSpacing: '2px' }}>
-                            *384*70#
+                            *384*474718#
                         </p>
                         <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '8px' }}>
                             Safaricom · Airtel · Telkom
@@ -497,7 +497,7 @@ const FarmerDashboardPage: React.FC = () => {
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
                         {[
-                            { step: '1', title: 'Dial *384*70#', desc: 'On your phone keypad' },
+                            { step: '1', title: 'Dial *384*474718#', desc: 'On your phone keypad' },
                             { step: '2', title: 'Select Language', desc: 'English or Swahili' },
                             { step: '3', title: 'Choose Crop', desc: 'Pick from the list' },
                             { step: '4', title: 'Get Prices', desc: 'Latest prices via SMS' },

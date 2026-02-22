@@ -9,6 +9,12 @@ SokoPrice is a full-stack web platform that provides **real-time agricultural ma
 - **Admins** manage crops, markets, sources, and approve submitted prices
 - **USSD users** dial a shortcode from any phone to get prices via text menus
 
+## 🎥 Demo Video
+
+https://github.com/user-attachments/assets/demo.mp4
+
+> **Note:** To view the demo locally, see [`demo.mp4`](./demo.mp4) in the project root.
+
 ## 📱 Key Features
 
 | Feature | Description |
@@ -16,7 +22,7 @@ SokoPrice is a full-stack web platform that provides **real-time agricultural ma
 | **Public Farmer Dashboard** | View prices, charts, market comparisons — no account required |
 | **Admin Dashboard** | Full CRUD for crops, markets, sources, and price management |
 | **Buyer Dashboard** | Market analytics and reporting for buyers and NGOs |
-| **USSD Integration** | Access prices via `*384*70#` on any mobile phone (Africa's Talking) |
+| **USSD Integration** | Access prices via `*384*474718#` on any mobile phone (Africa's Talking) |
 | **SMS Alerts** | Price notification system for subscribed users |
 | **Confidence Scoring** | Reliability ratings based on source history and cross-validation |
 | **CSV Export** | Download price data for offline analysis |
