@@ -18,10 +18,13 @@ import ussdRoutes from './routes/ussdRoutes';
 
 const app = express();
 
+// Trust proxy (required for Render, Heroku, etc. behind reverse proxy)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
-    origin: env.NODE_ENV === 'development' ? true : env.CLIENT_URL,
+    origin: env.NODE_ENV === 'development' ? true : [env.CLIENT_URL, 'https://soko-price.vercel.app'],
     credentials: true,
 }));
 
