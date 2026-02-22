@@ -23,7 +23,8 @@ Access real-time crop prices from **any phone** — no internet or smartphone re
 
 ## 🎥 Demo Video
 
-https://github.com/Patrick-mwanza/soko-price-1/raw/main/demo.mp4
+[https://github.com/Patrick-mwanza/soko-price-1/raw/main/demo.mp4](https://github.com/user-attachments/assets/939cedfd-ccfb-4b75-9c8c-fc65747bf725)
+
 
 ## 📱 Key Features
 
