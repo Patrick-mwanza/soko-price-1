@@ -28,24 +28,31 @@ const PriceManagementPage: React.FC = () => {
     const [submitting, setSubmitting] = useState(false);
     const [formMsg, setFormMsg] = useState('');
 
+    // Inline "Add New" states
+    const [addingCrop, setAddingCrop] = useState(false);
+    const [newCrop, setNewCrop] = useState({ name: '', unit: 'kg', season: 'Year-round' });
+    const [addingMarket, setAddingMarket] = useState(false);
+    const [newMarket, setNewMarket] = useState({ name: '', county: '', location: '' });
+    const [addingSource, setAddingSource] = useState(false);
+    const [newSource, setNewSource] = useState({ name: '', phone: '', role: 'Market Agent' });
+
     // Load crops, markets, sources for form dropdowns
-    useEffect(() => {
-        const loadFormData = async () => {
-            try {
-                const [cropsRes, marketsRes, sourcesRes] = await Promise.all([
-                    api.get('/crops'),
-                    api.get('/markets'),
-                    api.get('/sources').catch(() => ({ data: [] })),
-                ]);
-                setCrops(cropsRes.data);
-                setMarkets(marketsRes.data);
-                setSources(sourcesRes.data);
-            } catch (err) {
-                console.error('Failed to load form data:', err);
-            }
-        };
-        loadFormData();
-    }, []);
+    const loadFormData = async () => {
+        try {
+            const [cropsRes, marketsRes, sourcesRes] = await Promise.all([
+                api.get('/crops'),
+                api.get('/markets'),
+                api.get('/sources').catch(() => ({ data: [] })),
+            ]);
+            setCrops(cropsRes.data);
+            setMarkets(marketsRes.data);
+            setSources(sourcesRes.data);
+        } catch (err) {
+            console.error('Failed to load form data:', err);
+        }
+    };
+
+    useEffect(() => { loadFormData(); }, []);
 
     const fetchPrices = async () => {
         setLoading(true);
@@ -67,6 +74,54 @@ const PriceManagementPage: React.FC = () => {
     useEffect(() => {
         fetchPrices();
     }, [filter, page]);
+
+    // Create new crop inline
+    const handleCreateCrop = async () => {
+        if (!newCrop.name) return;
+        try {
+            const res = await api.post('/crops', newCrop);
+            setCrops(prev => [...prev, res.data]);
+            setFormData(prev => ({ ...prev, cropId: res.data._id }));
+            setAddingCrop(false);
+            setNewCrop({ name: '', unit: 'kg', season: 'Year-round' });
+            setFormMsg('✅ New crop created!');
+            setTimeout(() => setFormMsg(''), 2000);
+        } catch (err: any) {
+            setFormMsg(`❌ ${err.response?.data?.message || 'Failed to create crop'}`);
+        }
+    };
+
+    // Create new market inline
+    const handleCreateMarket = async () => {
+        if (!newMarket.name || !newMarket.county) return;
+        try {
+            const res = await api.post('/markets', newMarket);
+            setMarkets(prev => [...prev, res.data]);
+            setFormData(prev => ({ ...prev, marketId: res.data._id }));
+            setAddingMarket(false);
+            setNewMarket({ name: '', county: '', location: '' });
+            setFormMsg('✅ New market created!');
+            setTimeout(() => setFormMsg(''), 2000);
+        } catch (err: any) {
+            setFormMsg(`❌ ${err.response?.data?.message || 'Failed to create market'}`);
+        }
+    };
+
+    // Create new source inline
+    const handleCreateSource = async () => {
+        if (!newSource.name || !newSource.phone) return;
+        try {
+            const res = await api.post('/sources', newSource);
+            setSources(prev => [...prev, res.data]);
+            setFormData(prev => ({ ...prev, sourceId: res.data._id }));
+            setAddingSource(false);
+            setNewSource({ name: '', phone: '', role: 'Market Agent' });
+            setFormMsg('✅ New source created!');
+            setTimeout(() => setFormMsg(''), 2000);
+        } catch (err: any) {
+            setFormMsg(`❌ ${err.response?.data?.message || 'Failed to create source'}`);
+        }
+    };
 
     const handleAddPrice = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -148,65 +203,110 @@ const PriceManagementPage: React.FC = () => {
             {showForm && (
                 <article className="card" style={{ marginBottom: '24px', border: '1px solid rgba(34,197,94,0.2)' }}>
                     <h3 style={{ marginBottom: '16px' }}>📝 Add New Price</h3>
-                    <form onSubmit={handleAddPrice} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px', alignItems: 'end' }}>
-                        <div>
-                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
-                                Crop *
-                            </label>
-                            <select
-                                className="form-input"
-                                value={formData.cropId}
-                                onChange={(e) => setFormData({ ...formData, cropId: e.target.value })}
-                                required
-                            >
-                                <option value="">Select crop</option>
-                                {crops.map(c => <option key={c._id} value={c._id}>{c.name} ({c.unit})</option>)}
-                            </select>
+                    <form onSubmit={handleAddPrice}>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px', marginBottom: '16px' }}>
+                            {/* Crop selector */}
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>Crop *</label>
+                                    <button type="button" onClick={() => setAddingCrop(!addingCrop)}
+                                        style={{ background: 'none', border: 'none', color: 'var(--green-400)', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
+                                        {addingCrop ? '✕ Cancel' : '+ Add New'}
+                                    </button>
+                                </div>
+                                {!addingCrop ? (
+                                    <select className="form-input" value={formData.cropId}
+                                        onChange={(e) => setFormData({ ...formData, cropId: e.target.value })} required>
+                                        <option value="">Select crop</option>
+                                        {crops.map(c => <option key={c._id} value={c._id}>{c.name} ({c.unit})</option>)}
+                                    </select>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(34,197,94,0.05)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(34,197,94,0.3)' }}>
+                                        <input className="form-input" placeholder="Crop name (e.g. Tomatoes)" value={newCrop.name}
+                                            onChange={(e) => setNewCrop({ ...newCrop, name: e.target.value })} />
+                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                            <select className="form-input" value={newCrop.unit}
+                                                onChange={(e) => setNewCrop({ ...newCrop, unit: e.target.value })}>
+                                                <option value="kg">kg</option><option value="bag">bag (90kg)</option>
+                                                <option value="debe">debe</option><option value="bunch">bunch</option>
+                                                <option value="crate">crate</option><option value="piece">piece</option>
+                                            </select>
+                                            <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateCrop}>Create</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Market selector */}
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>Market *</label>
+                                    <button type="button" onClick={() => setAddingMarket(!addingMarket)}
+                                        style={{ background: 'none', border: 'none', color: 'var(--green-400)', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
+                                        {addingMarket ? '✕ Cancel' : '+ Add New'}
+                                    </button>
+                                </div>
+                                {!addingMarket ? (
+                                    <select className="form-input" value={formData.marketId}
+                                        onChange={(e) => setFormData({ ...formData, marketId: e.target.value })} required>
+                                        <option value="">Select market</option>
+                                        {markets.map(m => <option key={m._id} value={m._id}>{m.name} ({m.county})</option>)}
+                                    </select>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(34,197,94,0.05)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(34,197,94,0.3)' }}>
+                                        <input className="form-input" placeholder="Market name (e.g. Gikomba)" value={newMarket.name}
+                                            onChange={(e) => setNewMarket({ ...newMarket, name: e.target.value })} />
+                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                            <input className="form-input" placeholder="County (e.g. Nairobi)" value={newMarket.county}
+                                                onChange={(e) => setNewMarket({ ...newMarket, county: e.target.value })} />
+                                            <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateMarket}>Create</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Source selector */}
+                            <div>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                    <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>Source (optional)</label>
+                                    <button type="button" onClick={() => setAddingSource(!addingSource)}
+                                        style={{ background: 'none', border: 'none', color: 'var(--green-400)', cursor: 'pointer', fontSize: '12px', fontWeight: 600 }}>
+                                        {addingSource ? '✕ Cancel' : '+ Add New'}
+                                    </button>
+                                </div>
+                                {!addingSource ? (
+                                    <select className="form-input" value={formData.sourceId}
+                                        onChange={(e) => setFormData({ ...formData, sourceId: e.target.value })}>
+                                        <option value="">Auto-select</option>
+                                        {sources.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                                    </select>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', background: 'rgba(34,197,94,0.05)', padding: '10px', borderRadius: '8px', border: '1px dashed rgba(34,197,94,0.3)' }}>
+                                        <input className="form-input" placeholder="Source name (e.g. John Kamau)" value={newSource.name}
+                                            onChange={(e) => setNewSource({ ...newSource, name: e.target.value })} />
+                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                            <input className="form-input" placeholder="Phone (+254...)" value={newSource.phone}
+                                                onChange={(e) => setNewSource({ ...newSource, phone: e.target.value })} />
+                                            <button type="button" className="btn btn-primary btn-sm" onClick={handleCreateSource}>Create</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
-                                Market *
-                            </label>
-                            <select
-                                className="form-input"
-                                value={formData.marketId}
-                                onChange={(e) => setFormData({ ...formData, marketId: e.target.value })}
-                                required
-                            >
-                                <option value="">Select market</option>
-                                {markets.map(m => <option key={m._id} value={m._id}>{m.name} ({m.county})</option>)}
-                            </select>
+
+                        {/* Price input + submit */}
+                        <div style={{ display: 'flex', gap: '12px', alignItems: 'end', flexWrap: 'wrap' }}>
+                            <div style={{ flex: '1', minWidth: '150px' }}>
+                                <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
+                                    Price (KSh) *
+                                </label>
+                                <input type="number" className="form-input" placeholder="e.g. 4500" value={formData.price}
+                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })} min="1" required />
+                            </div>
+                            <button type="submit" className="btn btn-primary" disabled={submitting} style={{ height: '42px', minWidth: '140px' }}>
+                                {submitting ? '⏳ Adding...' : '✅ Submit Price'}
+                            </button>
                         </div>
-                        <div>
-                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
-                                Source (optional)
-                            </label>
-                            <select
-                                className="form-input"
-                                value={formData.sourceId}
-                                onChange={(e) => setFormData({ ...formData, sourceId: e.target.value })}
-                            >
-                                <option value="">Auto-select</option>
-                                {sources.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-                            </select>
-                        </div>
-                        <div>
-                            <label style={{ fontSize: '12px', fontWeight: 600, display: 'block', marginBottom: '4px', color: 'var(--text-muted)' }}>
-                                Price (KSh) *
-                            </label>
-                            <input
-                                type="number"
-                                className="form-input"
-                                placeholder="e.g. 4500"
-                                value={formData.price}
-                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                min="1"
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="btn btn-primary" disabled={submitting} style={{ height: '42px' }}>
-                            {submitting ? '⏳ Adding...' : '✅ Submit Price'}
-                        </button>
                     </form>
                     {formMsg && (
                         <p style={{
