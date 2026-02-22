@@ -1,7 +1,11 @@
 import axios from 'axios';
 
+// Use Render backend in production, Vite proxy in development
+const API_BASE = import.meta.env.VITE_API_URL
+    || (window.location.hostname !== 'localhost' ? 'https://sokoprice-api.onrender.com/api' : '/api');
+
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE,
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -9,7 +13,7 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('sokoprice_token');
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token} `;
     }
     return config;
 });
