@@ -6,9 +6,13 @@ const MarketplacePage: React.FC = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    // If already logged in, go to marketplace dashboard
+    // If already logged in, redirect based on role
     if (user) {
-        navigate('/marketplace/dashboard');
+        if (user.role === 'NGO') {
+            navigate('/ngo');
+        } else {
+            navigate('/marketplace/dashboard');
+        }
         return null;
     }
 

@@ -12,19 +12,21 @@ const LoginPage: React.FC = () => {
     const [isRegister, setIsRegister] = useState(initialMode);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [selectedRole, setSelectedRole] = useState<'Buyer' | 'NGO'>('Buyer');
     const [name, setName] = useState('');
-    const isNGOSignup = redirectTo === '/ngo';
-    const [role, setRole] = useState<'Buyer' | 'Seller' | 'Trader'>('Buyer');
+
     const [phoneNumber, setPhoneNumber] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const getRedirectPath = (userRole: string) => {
+        if (redirectTo) return redirectTo;
         if (userRole === 'Admin') return '/admin';
         if (userRole === 'NGO') return '/ngo';
         if (userRole === 'Buyer') return '/buyer';
-        return '/marketplace/dashboard'; // Seller, Trader
+        // Trader, Seller, Farmer → marketplace
+        return '/marketplace/dashboard';
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -54,7 +56,7 @@ const LoginPage: React.FC = () => {
                 email,
                 password,
                 phoneNumber: phoneNumber || undefined,
-                role: isNGOSignup ? 'NGO' : role,
+                role: selectedRole,
             });
             const savedUser = localStorage.getItem('sokoprice_user');
             const userRole = savedUser ? JSON.parse(savedUser).role : 'Buyer';
@@ -178,26 +180,48 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="reg-role">Account Type</label>
-                                {isNGOSignup ? (
-                                    <div
-                                        id="reg-role"
-                                        className="form-input"
-                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(34,197,94,0.08)', cursor: 'default' }}
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        type="button"
+                                        id="reg-role-buyer"
+                                        onClick={() => setSelectedRole('Buyer')}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px 12px',
+                                            borderRadius: '8px',
+                                            border: selectedRole === 'Buyer' ? '2px solid var(--green-400)' : '1px solid var(--border-color)',
+                                            background: selectedRole === 'Buyer' ? 'rgba(34,197,94,0.12)' : 'var(--bg-secondary)',
+                                            color: selectedRole === 'Buyer' ? 'var(--green-400)' : 'var(--text-muted)',
+                                            cursor: 'pointer',
+                                            fontWeight: 600,
+                                            fontSize: '13px',
+                                            fontFamily: 'var(--font-family)',
+                                            transition: 'all 0.2s',
+                                        }}
                                     >
-                                        🏛️ <strong>NGO / Research</strong> <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— Organization account</span>
-                                    </div>
-                                ) : (
-                                    <select
-                                        id="reg-role"
-                                        className="form-input"
-                                        value={role}
-                                        onChange={(e) => setRole(e.target.value as 'Buyer' | 'Seller' | 'Trader')}
+                                        🛒 Buyer
+                                    </button>
+                                    <button
+                                        type="button"
+                                        id="reg-role-ngo"
+                                        onClick={() => setSelectedRole('NGO')}
+                                        style={{
+                                            flex: 1,
+                                            padding: '10px 12px',
+                                            borderRadius: '8px',
+                                            border: selectedRole === 'NGO' ? '2px solid var(--green-400)' : '1px solid var(--border-color)',
+                                            background: selectedRole === 'NGO' ? 'rgba(34,197,94,0.12)' : 'var(--bg-secondary)',
+                                            color: selectedRole === 'NGO' ? 'var(--green-400)' : 'var(--text-muted)',
+                                            cursor: 'pointer',
+                                            fontWeight: 600,
+                                            fontSize: '13px',
+                                            fontFamily: 'var(--font-family)',
+                                            transition: 'all 0.2s',
+                                        }}
                                     >
-                                        <option value="Buyer">🛒 Buyer — I want to buy crops</option>
-                                        <option value="Seller">🌾 Seller — I want to sell crops</option>
-                                        <option value="Trader">📦 Trader — I buy and sell crops</option>
-                                    </select>
-                                )}
+                                        🏛️ NGO / Research
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="form-group">

@@ -24,9 +24,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 
 // Sidebar navigation layout
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user, logout, isAdmin, isNGO } = useAuth();
+    const { user, logout, isAdmin, isNGO, isTrader } = useAuth();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const isSeller = user?.role === 'Seller';
 
     const handleLogout = () => {
         logout();
@@ -51,7 +53,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { to: '/ngo/reports', icon: '📈', label: 'Analytics & Reports' },
     ];
 
-    const links = isAdmin ? adminLinks : isNGO ? ngoLinks : buyerLinks;
+    const traderSellerLinks = [
+        { to: '/marketplace/dashboard', icon: '🏪', label: 'Marketplace' },
+    ];
+
+    const links = isAdmin ? adminLinks : isNGO ? ngoLinks : (isTrader || isSeller) ? traderSellerLinks : buyerLinks;
 
     return (
         <div className="app-layout">
@@ -136,7 +142,7 @@ const AppRoutes: React.FC = () => {
             {/* Marketplace routes */}
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace/dashboard" element={
-                <ProtectedRoute roles={['Farmer', 'Buyer', 'Trader', 'Seller', 'NGO', 'Admin']}>
+                <ProtectedRoute roles={['Farmer', 'Buyer', 'Trader', 'Seller', 'Admin']}>
                     <MarketplaceDashboardPage />
                 </ProtectedRoute>
             } />
