@@ -21,10 +21,10 @@ const LoginPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
 
     const getRedirectPath = (userRole: string) => {
-        if (redirectTo) return redirectTo;
         if (userRole === 'Admin') return '/admin';
         if (userRole === 'NGO') return '/ngo';
-        return '/buyer';
+        if (userRole === 'Buyer') return '/buyer';
+        return '/marketplace/dashboard'; // Seller, Trader
     };
 
     const handleLogin = async (e: React.FormEvent) => {

@@ -141,7 +141,7 @@ const AppRoutes: React.FC = () => {
                 </ProtectedRoute>
             } />
 
-            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : user.role === 'NGO' ? '/ngo' : '/marketplace/dashboard'} /> : <LoginPage />} />
+            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : user.role === 'NGO' ? '/ngo' : user.role === 'Buyer' ? '/buyer' : '/marketplace/dashboard'} /> : <LoginPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
