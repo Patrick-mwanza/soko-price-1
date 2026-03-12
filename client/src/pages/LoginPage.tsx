@@ -8,11 +8,12 @@ const LoginPage: React.FC = () => {
     const [searchParams] = useSearchParams();
     const redirectTo = searchParams.get('redirect') || null;
     const initialMode = searchParams.get('mode') === 'register';
+    const isMarketplace = redirectTo?.includes('marketplace') || false;
 
     const [isRegister, setIsRegister] = useState(initialMode);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [selectedRole, setSelectedRole] = useState<'Buyer' | 'NGO'>('Buyer');
+    const [selectedRole, setSelectedRole] = useState<'Buyer' | 'NGO' | 'Trader' | 'Seller'>(isMarketplace ? 'Buyer' : 'NGO');
     const [name, setName] = useState('');
 
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -67,6 +68,7 @@ const LoginPage: React.FC = () => {
             setLoading(false);
         }
     };
+
 
     return (
         <main className="login-page">
@@ -180,48 +182,41 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="reg-role">Account Type</label>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button
-                                        type="button"
-                                        id="reg-role-buyer"
-                                        onClick={() => setSelectedRole('Buyer')}
-                                        style={{
-                                            flex: 1,
-                                            padding: '10px 12px',
-                                            borderRadius: '8px',
-                                            border: selectedRole === 'Buyer' ? '2px solid var(--green-400)' : '1px solid var(--border-color)',
-                                            background: selectedRole === 'Buyer' ? 'rgba(34,197,94,0.12)' : 'var(--bg-secondary)',
-                                            color: selectedRole === 'Buyer' ? 'var(--green-400)' : 'var(--text-muted)',
-                                            cursor: 'pointer',
-                                            fontWeight: 600,
-                                            fontSize: '13px',
-                                            fontFamily: 'var(--font-family)',
-                                            transition: 'all 0.2s',
-                                        }}
+                                {isMarketplace ? (
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        {(['Buyer', 'Trader', 'Seller'] as const).map(role => (
+                                            <button
+                                                key={role}
+                                                type="button"
+                                                id={`reg-role-${role.toLowerCase()}`}
+                                                onClick={() => setSelectedRole(role)}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '10px 12px',
+                                                    borderRadius: '8px',
+                                                    border: selectedRole === role ? '2px solid var(--green-400)' : '1px solid var(--border-color)',
+                                                    background: selectedRole === role ? 'rgba(34,197,94,0.12)' : 'var(--bg-secondary)',
+                                                    color: selectedRole === role ? 'var(--green-400)' : 'var(--text-muted)',
+                                                    cursor: 'pointer',
+                                                    fontWeight: 600,
+                                                    fontSize: '13px',
+                                                    fontFamily: 'var(--font-family)',
+                                                    transition: 'all 0.2s',
+                                                }}
+                                            >
+                                                {role === 'Buyer' ? '🛒' : role === 'Trader' ? '💼' : '🌾'} {role}
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div
+                                        id="reg-role"
+                                        className="form-input"
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(34,197,94,0.08)', cursor: 'default' }}
                                     >
-                                        🛒 Buyer
-                                    </button>
-                                    <button
-                                        type="button"
-                                        id="reg-role-ngo"
-                                        onClick={() => setSelectedRole('NGO')}
-                                        style={{
-                                            flex: 1,
-                                            padding: '10px 12px',
-                                            borderRadius: '8px',
-                                            border: selectedRole === 'NGO' ? '2px solid var(--green-400)' : '1px solid var(--border-color)',
-                                            background: selectedRole === 'NGO' ? 'rgba(34,197,94,0.12)' : 'var(--bg-secondary)',
-                                            color: selectedRole === 'NGO' ? 'var(--green-400)' : 'var(--text-muted)',
-                                            cursor: 'pointer',
-                                            fontWeight: 600,
-                                            fontSize: '13px',
-                                            fontFamily: 'var(--font-family)',
-                                            transition: 'all 0.2s',
-                                        }}
-                                    >
-                                        🏛️ NGO / Research
-                                    </button>
-                                </div>
+                                        🏛️ <strong>NGO / Research</strong> <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— Organization account</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="form-group">
