@@ -25,8 +25,7 @@ const LoginPage: React.FC = () => {
         if (redirectTo) return redirectTo;
         if (userRole === 'Admin') return '/admin';
         if (userRole === 'NGO') return '/ngo';
-        if (userRole === 'Buyer') return '/buyer';
-        // Trader, Seller, Farmer → marketplace
+        // Buyer, Trader, Seller, Farmer → marketplace
         return '/marketplace/dashboard';
     };
 

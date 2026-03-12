@@ -46,8 +46,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     ];
 
     const buyerLinks = [
-        { to: '/buyer', icon: '🛒', label: 'Market Prices' },
-        { to: '/buyer/reports', icon: '📈', label: 'Reports & Trends' },
+        { to: '/marketplace/dashboard', icon: '🛒', label: 'Marketplace' },
     ];
 
     const ngoLinks = [
@@ -149,7 +148,7 @@ const AppRoutes: React.FC = () => {
                 </ProtectedRoute>
             } />
 
-            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : user.role === 'NGO' ? '/ngo' : user.role === 'Buyer' ? '/buyer' : '/marketplace/dashboard'} /> : <LoginPage />} />
+            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : user.role === 'NGO' ? '/ngo' : '/marketplace/dashboard'} /> : <LoginPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
