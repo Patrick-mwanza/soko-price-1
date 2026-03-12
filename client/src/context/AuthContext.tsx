@@ -6,7 +6,7 @@ interface User {
     name: string;
     email: string;
     phoneNumber?: string;
-    role: 'Farmer' | 'Admin' | 'Buyer' | 'Trader' | 'Seller';
+    role: 'Farmer' | 'Admin' | 'Buyer' | 'Trader' | 'Seller' | 'NGO';
     language: string;
 }
 
@@ -28,6 +28,7 @@ interface AuthContextType {
     isBuyer: boolean;
     isFarmer: boolean;
     isTrader: boolean;
+    isNGO: boolean;
     loading: boolean;
 }
 
@@ -85,6 +86,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 isBuyer: user?.role === 'Buyer',
                 isFarmer: user?.role === 'Farmer',
                 isTrader: user?.role === 'Trader',
+                isNGO: user?.role === 'NGO',
                 loading,
             }}
         >

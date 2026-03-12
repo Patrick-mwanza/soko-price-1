@@ -266,7 +266,7 @@ const FarmerDashboardPage: React.FC = () => {
                     </a>
 
                     {/* NGO / Research */}
-                    <a href="/login?redirect=/buyer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <a href="/login?redirect=/ngo" style={{ textDecoration: 'none', color: 'inherit' }}>
                         <div className="stat-card" style={{ textAlign: 'center', cursor: 'pointer', padding: '20px', height: '100%' }}>
                             <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🏛️</span>
                             <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>NGO / Research</h3>

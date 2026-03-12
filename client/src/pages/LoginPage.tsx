@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const [role, setRole] = useState<'Buyer' | 'Seller' | 'Trader'>('Buyer');
+
     const [phoneNumber, setPhoneNumber] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -21,7 +21,9 @@ const LoginPage: React.FC = () => {
 
     const getRedirectPath = (userRole: string) => {
         if (redirectTo) return redirectTo;
-        return userRole === 'Admin' ? '/admin' : '/buyer';
+        if (userRole === 'Admin') return '/admin';
+        if (userRole === 'NGO') return '/ngo';
+        return '/buyer';
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -51,7 +53,7 @@ const LoginPage: React.FC = () => {
                 email,
                 password,
                 phoneNumber: phoneNumber || undefined,
-                role,
+                role: 'NGO',
             });
             const savedUser = localStorage.getItem('sokoprice_user');
             const userRole = savedUser ? JSON.parse(savedUser).role : 'Buyer';
@@ -175,16 +177,13 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="reg-role">Account Type</label>
-                                <select
+                                <div
                                     id="reg-role"
                                     className="form-input"
-                                    value={role}
-                                    onChange={(e) => setRole(e.target.value as 'Buyer' | 'Seller' | 'Trader')}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(34,197,94,0.08)', cursor: 'default' }}
                                 >
-                                    <option value="Buyer">🛒 Buyer — I want to buy crops</option>
-                                    <option value="Seller">🌾 Seller — I want to sell crops</option>
-                                    <option value="Trader">📦 Trader — I buy and sell crops</option>
-                                </select>
+                                    🏛️ <strong>NGO / Research</strong> <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— Organization account</span>
+                                </div>
                             </div>
 
                             <div className="form-group">

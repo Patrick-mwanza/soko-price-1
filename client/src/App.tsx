@@ -8,6 +8,7 @@ import SourceManagementPage from './pages/SourceManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import BuyerDashboardPage from './pages/BuyerDashboardPage';
 import FarmerDashboardPage from './pages/FarmerDashboardPage';
+import NGODashboardPage from './pages/NGODashboardPage';
 import MarketplacePage from './pages/MarketplacePage';
 import MarketplaceDashboardPage from './pages/MarketplaceDashboardPage';
 import AdminMarketplacePage from './pages/AdminMarketplacePage';
@@ -23,7 +24,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> 
 
 // Sidebar navigation layout
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user, logout, isAdmin } = useAuth();
+    const { user, logout, isAdmin, isNGO } = useAuth();
     const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -45,7 +46,12 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { to: '/buyer/reports', icon: '📈', label: 'Reports & Trends' },
     ];
 
-    const links = isAdmin ? adminLinks : buyerLinks;
+    const ngoLinks = [
+        { to: '/ngo', icon: '🏛️', label: 'Research Data' },
+        { to: '/ngo/reports', icon: '📈', label: 'Analytics & Reports' },
+    ];
+
+    const links = isAdmin ? adminLinks : isNGO ? ngoLinks : buyerLinks;
 
     return (
         <div className="app-layout">
@@ -130,12 +136,12 @@ const AppRoutes: React.FC = () => {
             {/* Marketplace routes */}
             <Route path="/marketplace" element={<MarketplacePage />} />
             <Route path="/marketplace/dashboard" element={
-                <ProtectedRoute roles={['Farmer', 'Buyer', 'Trader', 'Seller', 'Admin']}>
+                <ProtectedRoute roles={['Farmer', 'Buyer', 'Trader', 'Seller', 'NGO', 'Admin']}>
                     <MarketplaceDashboardPage />
                 </ProtectedRoute>
             } />
 
-            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/marketplace/dashboard'} /> : <LoginPage />} />
+            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : user.role === 'NGO' ? '/ngo' : '/marketplace/dashboard'} /> : <LoginPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
@@ -153,6 +159,10 @@ const AppRoutes: React.FC = () => {
             {/* Buyer Routes — allow Admin access too for testing */}
             <Route path="/buyer" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><BuyerDashboardPage /></AppLayout></ProtectedRoute>} />
             <Route path="/buyer/reports" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+
+            {/* NGO Routes */}
+            <Route path="/ngo" element={<ProtectedRoute roles={['NGO', 'Admin']}><AppLayout><NGODashboardPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/ngo/reports" element={<ProtectedRoute roles={['NGO', 'Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
 
             {/* Default: unknown paths → farmer dashboard */}
             <Route path="*" element={<Navigate to="/" />} />
