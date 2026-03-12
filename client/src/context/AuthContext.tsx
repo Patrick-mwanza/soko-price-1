@@ -5,17 +5,29 @@ interface User {
     id: string;
     name: string;
     email: string;
-    role: 'Farmer' | 'Admin' | 'Buyer';
+    phoneNumber?: string;
+    role: 'Farmer' | 'Admin' | 'Buyer' | 'Trader' | 'Seller';
     language: string;
+}
+
+interface RegisterData {
+    name: string;
+    email: string;
+    password: string;
+    phoneNumber?: string;
+    role?: string;
 }
 
 interface AuthContextType {
     user: User | null;
     token: string | null;
     login: (email: string, password: string) => Promise<void>;
+    register: (data: RegisterData) => Promise<void>;
     logout: () => void;
     isAdmin: boolean;
     isBuyer: boolean;
+    isFarmer: boolean;
+    isTrader: boolean;
     loading: boolean;
 }
 
@@ -45,6 +57,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         localStorage.setItem('sokoprice_user', JSON.stringify(newUser));
     };
 
+    const register = async (data: RegisterData) => {
+        const res = await api.post('/auth/register', data);
+        const { token: newToken, user: newUser } = res.data;
+        setToken(newToken);
+        setUser(newUser);
+        localStorage.setItem('sokoprice_token', newToken);
+        localStorage.setItem('sokoprice_user', JSON.stringify(newUser));
+    };
+
     const logout = () => {
         setToken(null);
         setUser(null);
@@ -58,9 +79,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                 user,
                 token,
                 login,
+                register,
                 logout,
                 isAdmin: user?.role === 'Admin',
                 isBuyer: user?.role === 'Buyer',
+                isFarmer: user?.role === 'Farmer',
+                isTrader: user?.role === 'Trader',
                 loading,
             }}
         >

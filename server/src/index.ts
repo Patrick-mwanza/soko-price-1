@@ -15,6 +15,7 @@ import sourceRoutes from './routes/sourceRoutes';
 import alertRoutes from './routes/alertRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import ussdRoutes from './routes/ussdRoutes';
+import listingRoutes from './routes/listingRoutes';
 
 const app = express();
 
@@ -54,6 +55,7 @@ app.use('/api/sources', sourceRoutes);
 app.use('/api/alerts', alertRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/ussd', ussdRoutes);
+app.use('/api/listings', listingRoutes);
 
 // 404 handler
 app.use((_req, res) => {

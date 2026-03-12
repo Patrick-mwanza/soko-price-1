@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Price from '../models/Price';
 import User from '../models/User';
 import Source from '../models/Source';
@@ -49,8 +50,8 @@ export const getPriceTrends = async (req: Request, res: Response): Promise<void>
             approved: true,
             date: { $gte: since },
         };
-        if (cropId) match.cropId = cropId;
-        if (marketId) match.marketId = marketId;
+        if (cropId) match.cropId = new mongoose.Types.ObjectId(cropId as string);
+        if (marketId) match.marketId = new mongoose.Types.ObjectId(marketId as string);
 
         const trends = await Price.aggregate([
             { $match: match },
@@ -105,7 +106,7 @@ export const getMarketComparison = async (req: Request, res: Response): Promise<
         const comparisons = await Promise.all(
             markets.map(async (market) => {
                 const latestPrice = await Price.findOne({
-                    cropId,
+                    cropId: new mongoose.Types.ObjectId(cropId as string),
                     marketId: market._id,
                     approved: true,
                 }).sort({ date: -1 });

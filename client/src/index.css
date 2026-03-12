@@ -433,6 +433,11 @@ tr:last-child td {
   color: var(--text-muted);
 }
 
+textarea.form-input {
+  min-height: 80px;
+  line-height: 1.5;
+}
+
 select.form-input {
   cursor: pointer;
 }

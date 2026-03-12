@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     AreaChart,
     Area,
@@ -12,6 +13,7 @@ import {
     Legend,
 } from 'recharts';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 interface Crop { _id: string; name: string; unit: string; }
 interface Market { _id: string; name: string; county: string; }
@@ -27,6 +29,8 @@ interface PriceData {
 const COLORS = ['#22c55e', '#f59e0b', '#3b82f6', '#ef4444', '#a855f7', '#06b6d4', '#ec4899'];
 
 const FarmerDashboardPage: React.FC = () => {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [crops, setCrops] = useState<Crop[]>([]);
     const [markets, setMarkets] = useState<Market[]>([]);
     const [prices, setPrices] = useState<PriceData[]>([]);
@@ -74,10 +78,11 @@ const FarmerDashboardPage: React.FC = () => {
 
     // Load trends when crop changes
     useEffect(() => {
-        if (!selectedCrop) { setTrends([]); return; }
         const fetchTrends = async () => {
             try {
-                const res = await api.get(`/analytics/public/trends?days=30&cropId=${selectedCrop}`);
+                let url = '/analytics/public/trends?days=30';
+                if (selectedCrop) url += `&cropId=${selectedCrop}`;
+                const res = await api.get(url);
                 setTrends(res.data);
             } catch (err) {
                 console.error('Failed to load trends:', err);
@@ -177,9 +182,28 @@ const FarmerDashboardPage: React.FC = () => {
                             padding: '6px 12px',
                             borderRadius: '6px',
                             border: '1px solid var(--border-color)',
+                            display: user ? 'none' : 'inline-block',
                         }}>
                             Sign In
                         </a>
+                        {user && (
+                            <button
+                                onClick={() => { logout(); navigate('/'); }}
+                                style={{
+                                    color: 'var(--text-muted)',
+                                    fontSize: '13px',
+                                    padding: '6px 12px',
+                                    borderRadius: '6px',
+                                    border: '1px solid var(--border-color)',
+                                    background: 'none',
+                                    cursor: 'pointer',
+                                    fontFamily: 'var(--font-family)',
+                                }}
+                                id="farmer-signout-btn"
+                            >
+                                🚪 Sign Out ({user.name})
+                            </button>
+                        )}
                     </div>
                 </div>
             </header>
@@ -212,6 +236,60 @@ const FarmerDashboardPage: React.FC = () => {
                             <p className="stat-value" style={{ fontSize: '22px' }}>{prices.length}</p>
                             <p className="stat-label">Price Reports</p>
                         </div>
+                    </div>
+                </section>
+
+                {/* Marketplace CTA + Role Selection */}
+                <section style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                    gap: '16px',
+                    marginBottom: '24px',
+                }}>
+                    {/* Marketplace CTA */}
+                    <a href="/marketplace" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className="stat-card" style={{
+                            background: 'linear-gradient(135deg, rgba(59,130,246,0.12) 0%, rgba(34,197,94,0.1) 100%)',
+                            border: '1px solid rgba(59,130,246,0.2)',
+                            cursor: 'pointer',
+                            textAlign: 'center',
+                            padding: '20px',
+                            height: '100%',
+                        }}>
+                            <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🏪</span>
+                            <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>Marketplace</h3>
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.4 }}>
+                                Want to sell or buy crops? Continue to the marketplace and connect directly with farmers and traders across Kenya.
+                            </p>
+                            <span className="btn btn-primary btn-sm" style={{ pointerEvents: 'none' }}>Continue to Marketplace</span>
+                        </div>
+                    </a>
+
+                    {/* NGO / Research */}
+                    <a href="/login?redirect=/buyer" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <div className="stat-card" style={{ textAlign: 'center', cursor: 'pointer', padding: '20px', height: '100%' }}>
+                            <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🏛️</span>
+                            <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '6px' }}>NGO / Research</h3>
+                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.4 }}>
+                                Need agricultural data for your research or organization? Sign in to access detailed analytics and price trend reports.
+                            </p>
+                            <span className="btn btn-outline btn-sm" style={{ pointerEvents: 'none' }}>Continue to NGO Dashboard</span>
+                        </div>
+                    </a>
+
+                    {/* Farmer - current */}
+                    <div className="stat-card" style={{
+                        textAlign: 'center',
+                        border: '2px solid var(--green-400)',
+                        background: 'rgba(34,197,94,0.08)',
+                        padding: '20px',
+                    }}>
+                        <span style={{ fontSize: '32px', display: 'block', marginBottom: '8px' }}>🌾</span>
+                        <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '6px', color: 'var(--green-400)' }}>Farmer Dashboard</h3>
+                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px', lineHeight: 1.4 }}>
+                            You're on the right page! Scroll down to browse today's real-time market prices from markets across Kenya.
+                        </p>
+                        <span className="badge badge-green" style={{ fontSize: '11px' }}>✓ Current Page</span>
                     </div>
                 </section>
 
@@ -347,15 +425,7 @@ const FarmerDashboardPage: React.FC = () => {
                 {/* Tab: Trends */}
                 {activeTab === 'trends' && (
                     <section className="animate-in">
-                        {!selectedCrop ? (
-                            <article className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
-                                <p style={{ fontSize: '40px', marginBottom: '12px' }}>📈</p>
-                                <h3>Select a crop to view price trends</h3>
-                                <p style={{ color: 'var(--text-muted)', marginTop: '8px' }}>
-                                    Use the crop filter above to see 30-day historical pricing data
-                                </p>
-                            </article>
-                        ) : chartData.length === 0 ? (
+                        {chartData.length === 0 ? (
                             <article className="card" style={{ textAlign: 'center', padding: '48px 24px' }}>
                                 <p style={{ fontSize: '40px', marginBottom: '12px' }}>📭</p>
                                 <h3>No trend data available</h3>
@@ -365,7 +435,7 @@ const FarmerDashboardPage: React.FC = () => {
                             </article>
                         ) : (
                             <article className="chart-container">
-                                <h3>📈 30-Day Price History: {crops.find(c => c._id === selectedCrop)?.name}</h3>
+                                <h3>📈 30-Day Price History: {selectedCrop ? crops.find(c => c._id === selectedCrop)?.name : 'All Crops'}</h3>
                                 <ResponsiveContainer width="100%" height={350}>
                                     <AreaChart data={chartData}>
                                         <defs>

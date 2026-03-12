@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const LoginPage: React.FC = () => {
-    const { login } = useAuth();
-    const [isRegister, setIsRegister] = useState(false);
+    const { login, register } = useAuth();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const redirectTo = searchParams.get('redirect') || null;
+    const initialMode = searchParams.get('mode') === 'register';
+
+    const [isRegister, setIsRegister] = useState(initialMode);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-    const [role] = useState<'Buyer'>('Buyer');
+    const [role, setRole] = useState<'Buyer' | 'Seller' | 'Trader'>('Buyer');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    const getRedirectPath = (userRole: string) => {
+        if (redirectTo) return redirectTo;
+        return userRole === 'Admin' ? '/admin' : '/buyer';
+    };
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -20,6 +30,10 @@ const LoginPage: React.FC = () => {
         setLoading(true);
         try {
             await login(email, password);
+            // Auth context updates, then redirect
+            const savedUser = localStorage.getItem('sokoprice_user');
+            const userRole = savedUser ? JSON.parse(savedUser).role : 'Buyer';
+            navigate(getRedirectPath(userRole));
         } catch (err: any) {
             setError(err.response?.data?.message || 'Login failed');
         } finally {
@@ -32,17 +46,16 @@ const LoginPage: React.FC = () => {
         setError('');
         setLoading(true);
         try {
-            const res = await api.post('/auth/register', {
+            await register({
                 name,
                 email,
                 password,
                 phoneNumber: phoneNumber || undefined,
                 role,
             });
-            // Auto-login after registration
-            localStorage.setItem('sokoprice_token', res.data.token);
-            localStorage.setItem('sokoprice_user', JSON.stringify(res.data.user));
-            window.location.href = res.data.user.role === 'Admin' ? '/admin' : '/buyer';
+            const savedUser = localStorage.getItem('sokoprice_user');
+            const userRole = savedUser ? JSON.parse(savedUser).role : 'Buyer';
+            navigate(getRedirectPath(userRole));
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
         } finally {
@@ -162,14 +175,16 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="reg-role">Account Type</label>
-                                <input
+                                <select
                                     id="reg-role"
-                                    type="text"
                                     className="form-input"
-                                    value="🛒 Buyer / NGO"
-                                    disabled
-                                    style={{ opacity: 0.7 }}
-                                />
+                                    value={role}
+                                    onChange={(e) => setRole(e.target.value as 'Buyer' | 'Seller' | 'Trader')}
+                                >
+                                    <option value="Buyer">🛒 Buyer — I want to buy crops</option>
+                                    <option value="Seller">🌾 Seller — I want to sell crops</option>
+                                    <option value="Trader">📦 Trader — I buy and sell crops</option>
+                                </select>
                             </div>
 
                             <div className="form-group">

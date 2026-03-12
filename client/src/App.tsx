@@ -8,6 +8,9 @@ import SourceManagementPage from './pages/SourceManagementPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import BuyerDashboardPage from './pages/BuyerDashboardPage';
 import FarmerDashboardPage from './pages/FarmerDashboardPage';
+import MarketplacePage from './pages/MarketplacePage';
+import MarketplaceDashboardPage from './pages/MarketplaceDashboardPage';
+import AdminMarketplacePage from './pages/AdminMarketplacePage';
 
 // Protected route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
@@ -34,6 +37,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { to: '/admin/prices', icon: '💰', label: 'Prices' },
         { to: '/admin/sources', icon: '📡', label: 'Sources' },
         { to: '/admin/analytics', icon: '📈', label: 'Analytics' },
+        { to: '/admin/marketplace', icon: '🏪', label: 'Marketplace' },
     ];
 
     const buyerLinks = [
@@ -118,17 +122,27 @@ const AppRoutes: React.FC = () => {
 
     return (
         <Routes>
-            {/* Public Farmer Dashboard — no auth required */}
+            {/* Public Farmer Dashboard — the main landing page */}
+            <Route path="/" element={<FarmerDashboardPage />} />
             <Route path="/farmers-dashboard" element={<FarmerDashboardPage />} />
             <Route path="/dashboard/public" element={<FarmerDashboardPage />} />
 
-            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <LoginPage />} />
+            {/* Marketplace routes */}
+            <Route path="/marketplace" element={<MarketplacePage />} />
+            <Route path="/marketplace/dashboard" element={
+                <ProtectedRoute roles={['Farmer', 'Buyer', 'Trader', 'Seller', 'Admin']}>
+                    <MarketplaceDashboardPage />
+                </ProtectedRoute>
+            } />
+
+            <Route path="/login" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/marketplace/dashboard'} /> : <LoginPage />} />
 
             {/* Admin Routes */}
             <Route path="/admin" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/prices" element={<ProtectedRoute roles={['Admin']}><AppLayout><PriceManagementPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/sources" element={<ProtectedRoute roles={['Admin']}><AppLayout><SourceManagementPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/analytics" element={<ProtectedRoute roles={['Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
+            <Route path="/admin/marketplace" element={<ProtectedRoute roles={['Admin']}><AppLayout><AdminMarketplacePage /></AppLayout></ProtectedRoute>} />
 
             {/* Route aliases (match TestSprite PRD paths) */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
@@ -140,9 +154,8 @@ const AppRoutes: React.FC = () => {
             <Route path="/buyer" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><BuyerDashboardPage /></AppLayout></ProtectedRoute>} />
             <Route path="/buyer/reports" element={<ProtectedRoute roles={['Buyer', 'Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
 
-            {/* Default: unauthenticated users see farmer dashboard */}
-            <Route path="/" element={user ? <Navigate to={user.role === 'Admin' ? '/admin' : '/buyer'} /> : <Navigate to="/farmers-dashboard" />} />
-            <Route path="*" element={<Navigate to="/farmers-dashboard" />} />
+            {/* Default: unknown paths → farmer dashboard */}
+            <Route path="*" element={<Navigate to="/" />} />
         </Routes>
     );
 };
