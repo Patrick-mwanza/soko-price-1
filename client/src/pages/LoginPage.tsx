@@ -13,7 +13,8 @@ const LoginPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
-
+    const isNGOSignup = redirectTo === '/ngo';
+    const [role, setRole] = useState<'Buyer' | 'Seller' | 'Trader'>('Buyer');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -53,7 +54,7 @@ const LoginPage: React.FC = () => {
                 email,
                 password,
                 phoneNumber: phoneNumber || undefined,
-                role: 'NGO',
+                role: isNGOSignup ? 'NGO' : role,
             });
             const savedUser = localStorage.getItem('sokoprice_user');
             const userRole = savedUser ? JSON.parse(savedUser).role : 'Buyer';
@@ -177,13 +178,26 @@ const LoginPage: React.FC = () => {
 
                             <div className="form-group">
                                 <label htmlFor="reg-role">Account Type</label>
-                                <div
-                                    id="reg-role"
-                                    className="form-input"
-                                    style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(34,197,94,0.08)', cursor: 'default' }}
-                                >
-                                    🏛️ <strong>NGO / Research</strong> <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— Organization account</span>
-                                </div>
+                                {isNGOSignup ? (
+                                    <div
+                                        id="reg-role"
+                                        className="form-input"
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(34,197,94,0.08)', cursor: 'default' }}
+                                    >
+                                        🏛️ <strong>NGO / Research</strong> <span style={{ color: 'var(--text-muted)', fontSize: '12px' }}>— Organization account</span>
+                                    </div>
+                                ) : (
+                                    <select
+                                        id="reg-role"
+                                        className="form-input"
+                                        value={role}
+                                        onChange={(e) => setRole(e.target.value as 'Buyer' | 'Seller' | 'Trader')}
+                                    >
+                                        <option value="Buyer">🛒 Buyer — I want to buy crops</option>
+                                        <option value="Seller">🌾 Seller — I want to sell crops</option>
+                                        <option value="Trader">📦 Trader — I buy and sell crops</option>
+                                    </select>
+                                )}
                             </div>
 
                             <div className="form-group">
