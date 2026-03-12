@@ -1,25 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#166534"/>
-      <stop offset="100%" stop-color="#15803d"/>
-    </linearGradient>
-  </defs>
-  <!-- Dark green rounded background -->
-  <rect width="32" height="32" rx="7" fill="url(#bg)"/>
-  <!-- Stacked cards effect -->
-  <rect x="6" y="8" width="16" height="20" rx="2" fill="#22c55e" opacity="0.3" transform="rotate(-6 14 18)"/>
-  <rect x="8" y="6" width="16" height="20" rx="2" fill="#22c55e" opacity="0.5" transform="rotate(-2 16 16)"/>
-  <rect x="10" y="5" width="16" height="20" rx="2" fill="#22c55e" opacity="0.7"/>
-  <!-- Wheat stalk on the card -->
-  <g transform="translate(18, 15)">
-    <!-- Stem -->
-    <line x1="0" y1="8" x2="0" y2="-5" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round"/>
-    <!-- Kernels -->
-    <ellipse cx="-2" cy="0" rx="2" ry="0.9" fill="#fbbf24" transform="rotate(-30 -2 0)"/>
-    <ellipse cx="2" cy="0" rx="2" ry="0.9" fill="#fbbf24" transform="rotate(30 2 0)"/>
-    <ellipse cx="-1.8" cy="-2.5" rx="1.7" ry="0.8" fill="#fbbf24" transform="rotate(-25 -1.8 -2.5)"/>
-    <ellipse cx="1.8" cy="-2.5" rx="1.7" ry="0.8" fill="#fbbf24" transform="rotate(25 1.8 -2.5)"/>
-    <ellipse cx="0" cy="-4.5" rx="1.4" ry="0.7" fill="#fbbf24"/>
+  <!-- Dark background matching app theme -->
+  <rect width="32" height="32" rx="6" fill="#111827"/>
+  
+  <!-- Stacked green pages/bars - tilted left -->
+  <rect x="5" y="7" width="13" height="18" rx="2" fill="#16a34a" opacity="0.4" transform="rotate(-8 11.5 16)"/>
+  <rect x="7" y="6" width="13" height="18" rx="2" fill="#22c55e" opacity="0.6" transform="rotate(-4 13.5 15)"/>
+  <rect x="9" y="5" width="13" height="18" rx="2" fill="#4ade80" opacity="0.8"/>
+  
+  <!-- Wheat stalk - golden -->
+  <g transform="translate(20, 14)">
+    <!-- Main stem -->
+    <line x1="0" y1="10" x2="0" y2="-6" stroke="#fbbf24" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Left kernels -->
+    <ellipse cx="-2.2" cy="1" rx="2.2" ry="1" fill="#fbbf24" transform="rotate(-25 -2.2 1)"/>
+    <ellipse cx="-2" cy="-2" rx="1.9" ry="0.9" fill="#fbbf24" transform="rotate(-20 -2 -2)"/>
+    <ellipse cx="-1.5" cy="-4.5" rx="1.5" ry="0.7" fill="#fbbf24" transform="rotate(-15 -1.5 -4.5)"/>
+    <!-- Right kernels -->
+    <ellipse cx="2.2" cy="1" rx="2.2" ry="1" fill="#fbbf24" transform="rotate(25 2.2 1)"/>
+    <ellipse cx="2" cy="-2" rx="1.9" ry="0.9" fill="#fbbf24" transform="rotate(20 2 -2)"/>
+    <ellipse cx="1.5" cy="-4.5" rx="1.5" ry="0.7" fill="#f59e0b" transform="rotate(15 1.5 -4.5)"/>
+    <!-- Top kernel -->
+    <ellipse cx="0" cy="-6" rx="1.2" ry="0.6" fill="#f59e0b"/>
   </g>
 </svg>
