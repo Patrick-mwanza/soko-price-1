@@ -12,6 +12,7 @@ import NGODashboardPage from './pages/NGODashboardPage';
 import MarketplacePage from './pages/MarketplacePage';
 import MarketplaceDashboardPage from './pages/MarketplaceDashboardPage';
 import AdminMarketplacePage from './pages/AdminMarketplacePage';
+import AdminUsersPage from './pages/AdminUsersPage';
 
 // Protected route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode; roles?: string[] }> = ({ children, roles }) => {
@@ -41,6 +42,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { to: '/admin/sources', icon: '📡', label: 'Sources' },
         { to: '/admin/analytics', icon: '📈', label: 'Analytics' },
         { to: '/admin/marketplace', icon: '🏪', label: 'Marketplace' },
+        { to: '/admin/users', icon: '👥', label: 'Users' },
     ];
 
     const buyerLinks = [
@@ -155,6 +157,7 @@ const AppRoutes: React.FC = () => {
             <Route path="/admin/sources" element={<ProtectedRoute roles={['Admin']}><AppLayout><SourceManagementPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/analytics" element={<ProtectedRoute roles={['Admin']}><AppLayout><AnalyticsPage /></AppLayout></ProtectedRoute>} />
             <Route path="/admin/marketplace" element={<ProtectedRoute roles={['Admin']}><AppLayout><AdminMarketplacePage /></AppLayout></ProtectedRoute>} />
+            <Route path="/admin/users" element={<ProtectedRoute roles={['Admin']}><AppLayout><AdminUsersPage /></AppLayout></ProtectedRoute>} />
 
             {/* Route aliases (match TestSprite PRD paths) */}
             <Route path="/dashboard" element={<ProtectedRoute roles={['Admin']}><AppLayout><DashboardPage /></AppLayout></ProtectedRoute>} />
